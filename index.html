@@ -22,7 +22,7 @@
 
 			//Required for blockchain API operators
 			apiURL: {
-				FLO: ['https://explorer.mediciland.com/',  'https://flosight.duckdns.org/',
+				FLO: ['https://explorer.mediciland.com/', 'https://flosight.duckdns.org/',
 					'http://livenet-explorer.floexperiments.com/'
 				],
 				FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
@@ -37,7 +37,7 @@
 
 			//for cloud apps
 			subAdmins: [],
-			application: "TEST_MODE",
+			application: "INTERN_APPLICATIONS",
 			vectorClock: {},
 			appObjects: {},
 			generalData: {},
@@ -248,7 +248,8 @@
 								<em>ranchimall.github.io/internapply</em></a></li>
 						<li><a href="https://ranchimall.github.io/RIBC" target="_blank">Internship Portal @
 								<em>ranchimall.github.io/RIBC</em></a></li>
-						<li><a href="https://ranchimall.github.io/p2p-content-collaboration" target="_blank">Content Collaboration Portal @
+						<li><a href="https://ranchimall.github.io/p2p-content-collaboration" target="_blank">Content
+								Collaboration Portal @
 								<em>ranchimall.github.io/p2p-content-collaboration</em></a></li>
 					</ul>
 					The process of applying and Internship is:
@@ -7926,7 +7927,7 @@
 								var change = utxoAmt - sendAmt - fee;
 								if (change > 0)
 									trx.addoutput(senderAddr, change);
-								trx.addflodata(floData.replace(/\n/g,' '));
+								trx.addflodata(floData.replace(/\n/g, ' '));
 								var signedTxHash = trx.sign(privKey, 1);
 								this.broadcastTx(signedTxHash)
 									.then(txid => resolve(txid))
@@ -7957,7 +7958,7 @@
 							}
 						}
 						trx.addoutput(floID, utxoAmt - fee);
-						trx.addflodata(floData.replace(/\n/g,' '));
+						trx.addflodata(floData.replace(/\n/g, ' '));
 						var signedTxHash = trx.sign(privKey, 1);
 						this.broadcastTx(signedTxHash)
 							.then(txid => resolve(txid))
@@ -7973,11 +7974,11 @@
 			 * @param  {boolean} preserveRatio (optional) preserve ratio or equal contribution
 			 * @return {Promise}
 			 */
-			writeDataMultiple: function (senderPrivKeys, data, receivers = [floGlobals.adminID], preserveRatio = true){
+			writeDataMultiple: function (senderPrivKeys, data, receivers = [floGlobals.adminID], preserveRatio = true) {
 				return new Promise((resolve, reject) => {
-					if (!Array.isArray(senderPrivKeys)) 
+					if (!Array.isArray(senderPrivKeys))
 						return reject("Invalid senderPrivKeys: SenderPrivKeys must be Array")
-					if(!preserveRatio){
+					if (!preserveRatio) {
 						let tmp = {};
 						let amount = (floGlobals.sendAmt * receivers.length) / senderPrivKeys.length;
 						senderPrivKeys.forEach(key => tmp[key] = amount);
@@ -8007,54 +8008,59 @@
 			 */
 			sendTxMultiple: function (senderPrivKeys, receivers, floData = '') {
 				return new Promise((resolve, reject) => {
-					
-					let senders = {}, preserveRatio; 
+	
+					let senders = {},
+						preserveRatio;
 					//check for argument validations
-					try{
+					try {
 						let invalids = {
 							InvalidSenderPrivKeys: [],
 							InvalidSenderAmountFor: [],
 							InvalidReceiverIDs: [],
 							InvalidReceiveAmountFor: []
 						}
-						let inputVal = 0, outputVal = 0;
+						let inputVal = 0,
+							outputVal = 0;
 						//Validate sender privatekeys (and send amount if passed)
 						//conversion when only privateKeys are passed (preserveRatio mode)
-						if(Array.isArray(senderPrivKeys)){  
+						if (Array.isArray(senderPrivKeys)) {
 							senderPrivKeys.forEach(key => {
-								try{
-									if(!key)
+								try {
+									if (!key)
 										invalids.InvalidSenderPrivKeys.push(key);
-									else{
-										let floID = floCrypto.getFloIDfromPubkeyHex(floCrypto.getPubKeyHex(key));
+									else {
+										let floID = floCrypto.getFloIDfromPubkeyHex(floCrypto
+											.getPubKeyHex(key));
 										senders[floID] = {
 											wif: key
 										}
 									}
-								}catch(error){
+								} catch (error) {
 									invalids.InvalidSenderPrivKeys.push(key)
 								}
 							})
 							preserveRatio = true;
 						}
 						//conversion when privatekeys are passed with send amount
-						else{
-							for(let key in senderPrivKeys){
-								try{
-									if(!key)
+						else {
+							for (let key in senderPrivKeys) {
+								try {
+									if (!key)
 										invalids.InvalidSenderPrivKeys.push(key);
-									else{
-										if(typeof senderPrivKeys[key] !== 'number' || senderPrivKeys[key] <= 0)
+									else {
+										if (typeof senderPrivKeys[key] !== 'number' || senderPrivKeys[
+											key] <= 0)
 											invalids.InvalidSenderAmountFor.push(key)
 										else
 											inputVal += senderPrivKeys[key];
-										let floID = floCrypto.getFloIDfromPubkeyHex(floCrypto.getPubKeyHex(key));
+										let floID = floCrypto.getFloIDfromPubkeyHex(floCrypto.getPubKeyHex(
+											key));
 										senders[floID] = {
 											wif: key,
 											coins: senderPrivKeys[key]
 										}
 									}
-								}catch(error){
+								} catch (error) {
 									invalids.InvalidSenderPrivKeys.push(key)
 								}
 							}
@@ -8076,9 +8082,10 @@
 						if (Object.keys(invalids).length)
 							return reject(invalids);
 						//Reject if given inputVal and outputVal are not equal
-						if(!preserveRatio && inputVal != outputVal)
-							return reject(`Input Amount (${inputVal}) not equal to Output Amount (${outputVal})`)
-					}catch(error){
+						if (!preserveRatio && inputVal != outputVal)
+							return reject(
+								`Input Amount (${inputVal}) not equal to Output Amount (${outputVal})`)
+					} catch (error) {
 						return reject(error)
 					}
 					//Get balance of senders
@@ -8090,18 +8097,22 @@
 							totalFee = floGlobals.fee,
 							balance = {};
 						//Divide fee among sender if not for preserveRatio
-						if(!preserveRatio) 
+						if (!preserveRatio)
 							var dividedFee = totalFee / Object.keys(senders).length;
 						//Check if balance of each sender is sufficient enough
 						let insufficient = [];
 						for (let floID in senders) {
 							balance[floID] = parseFloat(results.shift());
-							if (isNaN(balance[floID]) || (preserveRatio && balance[floID] <= totalFee) || (!preserveRatio && balance[floID] < senders[floID].coins + dividedFee))
+							if (isNaN(balance[floID]) || (preserveRatio && balance[floID] <=
+									totalFee) || (!preserveRatio && balance[floID] < senders[floID]
+									.coins + dividedFee))
 								insufficient.push(floID)
 							totalBalance += balance[floID];
 						}
 						if (insufficient.length)
-							return reject({InsufficientBalance: insufficient})
+							return reject({
+								InsufficientBalance: insufficient
+							})
 						//Calculate totalSentAmount and check if totalBalance is sufficient
 						let totalSendAmt = totalFee;
 						for (floID in receivers)
@@ -8118,10 +8129,10 @@
 							for (floID in senders) {
 								let utxos = results.shift();
 								let sendAmt;
-								if(preserveRatio){
+								if (preserveRatio) {
 									let ratio = (balance[floID] / totalBalance);
 									sendAmt = totalSendAmt * ratio;
-								} else 
+								} else
 									sendAmt = senders[floID].coins + dividedFee;
 								let wif = senders[floID].wif;
 								let utxoAmt = 0.0;
@@ -8142,7 +8153,7 @@
 							}
 							for (floID in receivers)
 								trx.addoutput(floID, receivers[floID]);
-							trx.addflodata(floData.replace(/\n/g,' '));
+							trx.addflodata(floData.replace(/\n/g, ' '));
 							for (let i = 0; i < wifSeq.length; i++)
 								trx.signinput(i, wifSeq[i], 1);
 							var signedTxHash = trx.serialize();
@@ -8209,7 +8220,7 @@
 			filter      : custom filter funtion for floData (eg . filter: d => {return d[0] == '$'})
 			*/
 			readData: function (addr, options = {}) {
-				options.limit = options.limit | 1000
+				options.limit = options.limit | 0
 				options.ignoreOld = options.ignoreOld | 0
 				return new Promise((resolve, reject) => {
 					this.promisedAPI(`api/addrs/${addr}/txs?from=0&to=1`).then(response => {
@@ -8224,13 +8235,17 @@
 									if (options.sentOnly && response.items[i].vin[0].addr !==
 										addr)
 										continue;
-									if (options.pattern && !response.items[i].floData
-										.startsWith(options.pattern, 0) && !response.items[i]
-										.floData.startsWith(options.pattern, 2))
-										continue;
-									if (options.contains && !response.items[i].floData.includes(
-											options.contains))
-										continue;
+									if (options.pattern) {
+										try {
+											let jsonContent = JSON.parse(response.items[i]
+												.floData)
+											if (!Object.keys(jsonContent).includes(options
+													.pattern))
+												continue;
+										} catch (error) {
+											continue;
+										}
+									}
 									if (options.filter && !options.filter(response.items[i]
 											.floData))
 										continue;
@@ -9132,7 +9147,9 @@
 							floGlobals.generalData[filterStr].push({
 								sender: dataSet[vc].senderID,
 								vectorClock: vc,
-								message: dataSet[vc].message
+								message: dataSet[vc].message,
+								sign: dataSet[vc].sign,
+								pubKey: dataSet[vc].pubKey
 							})
 							compactIDB.writeData("generalData", floGlobals.generalData[filterStr], filterStr)
 							floGlobals.generalVC[filterStr] = vc
@@ -9186,6 +9203,10 @@
 			//send General Data
 			sendGeneralData: function (message, type, options = {}) {
 				return new Promise((resolve, reject) => {
+					if(options.encrypt){
+						let encryptionKey = (options.encrypt === true) ? floGlobals.settings.encryptionKey : options.encrypt
+						message = floCrypto.encryptData(JSON.stringify(message), encryptionKey)
+					}
 					this.sendApplicationData(message, type, options)
 						.then(result => resolve(result))
 						.catch(error => reject(error))
@@ -9298,6 +9319,7 @@
 							credentials: {},
 							//for Dapps
 							subAdmins: {},
+							settings: {},
 							appObjects: {},
 							vectorClock: {},
 							generalData: {},
@@ -9349,7 +9371,7 @@
 						})
 					},
 	
-					readSubAdminListFromAPI: function () {
+					readAppConfigFromAPI: function () {
 						return new Promise((resolve, reject) => {
 							compactIDB.readData("lastTx", floGlobals.adminID).then(lastTx => {
 								floBlockchainAPI.readData(floGlobals.adminID, {
@@ -9360,6 +9382,8 @@
 									for (var i = result.data.length - 1; i >= 0; i--) {
 										var content = JSON.parse(result.data[i])[floGlobals
 											.application];
+										if (!content || typeof content !== "object")
+											continue;
 										if (Array.isArray(content.removeSubAdmin))
 											for (var j = 0; j < content.removeSubAdmin
 												.length; j++)
@@ -9370,12 +9394,21 @@
 												.length; k++)
 												compactIDB.writeData("subAdmins", true,
 													content.addSubAdmin[k]);
+										if (content.settings)
+											for (let l in content.settings)
+												compactIDB.writeData("settings", content
+													.settings[l], l)
 									}
 									compactIDB.writeData("lastTx", result.totalTxs,
 										floGlobals.adminID);
 									compactIDB.readAllData("subAdmins").then(result => {
 										floGlobals.subAdmins = Object.keys(result);
-										resolve("Read subAdmins from blockchain");
+										compactIDB.readAllData("settings").then(
+											result => {
+												floGlobals.settings = result;
+												resolve(
+													"Read app configuration from blockchain");
+											})
 									})
 								})
 							}).catch(error => reject(error))
@@ -9475,7 +9508,7 @@
 													JSON.stringify(resultIndexes))
 												//also add a dummy privatekey to the IDB
 												var randomPrivKey = floCrypto
-												.generateNewID().privKey
+													.generateNewID().privKey
 												var randomThreshold = floCrypto.randInt(10,
 													20)
 												writeSharesToIDB(floCrypto
@@ -9490,32 +9523,33 @@
 							})
 						}
 	
-						const checkIfPinRequired = function(key){
+						const checkIfPinRequired = function (key) {
 							return new Promise((resolve, reject) => {
-								if(key.length == 52)
+								if (key.length == 52)
 									resolve(key)
 								else {
 									inputFn("PIN/Password").then(pwd => {
-										try{
+										try {
 											let privKey = Crypto.AES.decrypt(key, pwd);
 											resolve(privKey)
-										}catch(error){
+										} catch (error) {
 											reject("Access Denied: Incorrect PIN/Password")
-										}                                   
-									}).catch(error => reject("Access Denied: PIN/Password required"))
-								} 
+										}
+									}).catch(error => reject(
+										"Access Denied: PIN/Password required"))
+								}
 							})
 						}
 	
 						return new Promise((resolve, reject) => {
 							getPrivateKeyCredentials().then(key => {
 								checkIfPinRequired(key).then(privKey => {
-									try{
+									try {
 										myPrivKey = privKey
 										myPubKey = floCrypto.getPubKeyHex(myPrivKey)
 										myFloID = floCrypto.getFloIDfromPubkeyHex(myPubKey)
 										resolve('Login Credentials loaded successful')
-									}catch(error){
+									} catch (error) {
 										reject("Corrupted Private Key")
 									}
 								}).catch(error => reject(error))
@@ -9530,13 +9564,13 @@
 							this.callStartUpFunction.completed += 1
 							reactor.dispatchEvent("startUpSuccessLog",
 								`${result}\nCompleted ${this.callStartUpFunction.completed}/${this.callStartUpFunction.total} Startup functions`
-								)
+							)
 							resolve(true)
 						}).catch(error => {
 							this.callStartUpFunction.failed += 1
 							reactor.dispatchEvent("startUpErrorLog",
 								`${error}\nFailed ${this.callStartUpFunction.failed}/${this.callStartUpFunction.total} Startup functions`
-								)
+							)
 							reject(false)
 						})
 					})
@@ -9586,8 +9620,10 @@
 	
 			manageSubAdmins(adminPrivKey, addList, rmList) {
 				return new Promise((resolve, reject) => {
-					if (!Array.isArray(addList)) addList = undefined;
-					if (!Array.isArray(rmList)) rmList = undefined;
+					if (!Array.isArray(addList) || !addList.length) addList = undefined;
+					if (!Array.isArray(rmList) || !rmList.length) rmList = undefined;
+					if (!addList && !rmList)
+						return reject("subAdmin manage list is empty")
 					var floData = {
 						[floGlobals.application]: {
 							addSubAdmin: addList,
@@ -9604,6 +9640,25 @@
 				})
 			},
 	
+			setApplicationSettings(adminPrivKey, settings = {}) {
+				return new Promise((resolve, reject) => {
+					if (!settings || typeof settings !== "object")
+						return reject("Settings must be object")
+					var floData = {
+						[floGlobals.application]: {
+							settings: settings
+						}
+					}
+					var floID = floCrypto.getFloIDfromPubkeyHex(floCrypto.getPubKeyHex(adminPrivKey))
+					if (floID != floGlobals.adminID)
+						reject('Access Denied for Admin privilege')
+					else
+						floBlockchainAPI.writeData(floID, JSON.stringify(floData), adminPrivKey)
+						.then(result => resolve(['Updated app settings', result]))
+						.catch(error => reject(error))
+				})
+			},
+	
 			clearCredentials: function () {
 				return new Promise((resolve, reject) => {
 					compactIDB.clearData('credentials').then(result => {
@@ -9614,18 +9669,19 @@
 				})
 			},
 	
-			securePrivKey: function(pwd){
+			securePrivKey: function (pwd) {
 				return new Promise((resolve, reject) => {
 					let indexArr = localStorage.getItem(`${floGlobals.application}#privKey`)
-					if(!indexArr)
+					if (!indexArr)
 						return reject("PrivKey not found");
 					indexArr = JSON.parse(indexArr)
 					let encryptedKey = Crypto.AES.encrypt(myPrivKey, pwd);
 					let threshold = indexArr.length;
 					let shares = floCrypto.createShamirsSecretShares(encryptedKey, threshold, threshold)
-					let promises = []; 
-					for(var i=0; i<threshold;i++)
-						promises.push(compactIDB.writeData("credentials", shares[i], indexArr[i], floGlobals.application));
+					let promises = [];
+					for (var i = 0; i < threshold; i++)
+						promises.push(compactIDB.writeData("credentials", shares[i], indexArr[i], floGlobals
+							.application));
 					Promise.all(promises)
 						.then(results => resolve("Private Key Secured"))
 						.catch(error => reject(error))
@@ -9648,7 +9704,25 @@
 				var filteredResult = []
 				for (var i = 0; i < floGlobals.generalData[filter].length; i++)
 					if (floGlobals.generalData[filter][i].vectorClock > vectorClock)
-						filteredResult.push(floGlobals.generalData[filter][i])
+						filteredResult.push(JSON.parse(JSON.stringify(floGlobals.generalData[filter][i])))
+				if (options.decrypt) {
+					let decryptionKey = (options.decrypt === true) ? myPrivKey : options.decrypt;
+					if (!Array.isArray(decryptionKey))
+						decryptionKey = [decryptionKey];
+					filteredResult.forEach(data => {
+						try {
+							if ("secret" in data.message && "senderPublicKeyString" in data.message) {
+								for (let key of decryptionKey) {
+									try {
+										let tmp = floCrypto.decryptData(data.message, key)
+										data.message = JSON.parse(tmp)
+										break;
+									} catch (error) {}
+								}
+							}
+						} catch (error) {}
+					})
+				}
 				return filteredResult
 			}
 		}
@@ -9700,7 +9774,7 @@
 				document.getElementById('applytabmain').style.display = 'none'
 				document.getElementById('applytabwaiting').style.display = 'initial'
 
-				floCloudAPI.sendGeneralData(JSON.stringify(mainObj), 'test4').then((result, mainObj) => {
+				floCloudAPI.sendGeneralData(JSON.stringify(mainObj), 'applicationbank_1').then((result, mainObj) => {
 
 
 					if (result.split(":")[0].trim() == "Data sent to supernode") {
@@ -9948,7 +10022,7 @@
 					receiverID: "FMeiptdJNtYQEtzyYAVNP8fjsDJ1i4EPfE",
 					application: 'RIBC'
 				})
-				let ribcGendata = floCloudAPI.requestGeneralData('test4')
+				let ribcGendata = floCloudAPI.requestGeneralData('applicationbank_1')
 
 				Promise.all([ribcAppdata, ribcGendata]).then((values) => {
 					console.log("The promises just got resolved")
@@ -9956,7 +10030,7 @@
 
 					// User list related operations 
 					let applicants_InformationArray = floGlobals.generalData[
-						'{"application":"TEST_MODE","type":"test4"}']
+						'{"application":"INTERN_APPLICATIONS","type":"applicationbank_1"}']
 					let applicantsIDarray = []
 					let projectlisttablebody = document.getElementById('projectlisttablebody')
 					for (let i = 0; i < applicants_InformationArray.length; i++) {
@@ -9997,8 +10071,8 @@
 									document.getElementById('whatsapp').readOnly = true
 									document.getElementById('applyactionlist_apply').style.display = 'none'
 									document.getElementById('directapply_resetform').style.display = 'none'
-									document.getElementById('applyactionlist_apply').disabled  = 'true'
-									document.getElementById('directapply_resetform').disabled  = 'true'
+									document.getElementById('applyactionlist_apply').disabled = 'true'
+									document.getElementById('directapply_resetform').disabled = 'true'
 									tcounter = tcounter + 1
 								}
 							}
