@@ -9768,7 +9768,7 @@
 			ev.preventDefault()
 
 			let mainObj = validateForm()
-
+			
 			if (mainObj != 0) {
 
 				document.getElementById('applytabmain').style.display = 'none'
@@ -9822,7 +9822,7 @@
 						}, 2500)
 					}
 				})
-			}
+			} 
 
 		})
 
@@ -9841,6 +9841,7 @@
 
 
 			if (!myFloID_isApplicant) {
+
 				// name validation 
 				aname = aname.replace(/\s+/g, ' ')
 				aname = aname.trim()
@@ -9891,6 +9892,12 @@
 					return 0
 				}
 				awhatsapp = floCrypto.encryptData(awhatsapp, encryption_pubkey)
+
+				if (aproject == ''){
+					alert("You haven't selected any project")
+					return 0
+				}
+
 			}
 
 
