@@ -45,12 +45,38 @@
 		}
 	</script>
 	<style>
+		.flex{
+			display: flex;
+		}
+		.align-center{
+			align-items: center;
+		}
+		.justify-right{
+			margin-left: auto;
+		}
 		#svgsection {
 			width: 200px;
 			margin: 0 auto;
 			padding: 20px;
 		}
-
+		.hide{
+			opacity: 0;
+			pointer-events: none;
+		}
+		#textCopied{
+			padding: 0.6rem 1.2rem;
+			border-radius: 2rem;
+			background: #ffffff20;
+			color: white;
+			position: fixed;
+			bottom: 0;
+			pointer-events: none;
+			margin: 2rem 0;
+			left: 50%;
+			transform: translateX(-50%);
+			transition: 0.3s opacity ease;
+			z-index: 20;
+		}
 		.spinner {
 			animation: rotate 1.4s linear infinite;
 			-webkit-animation: rotate 1.4s linear infinite;
@@ -197,7 +223,9 @@
 </head>
 
 <body class="is-preload" onload="onLoadStartUp()">
-
+    <h5 id="textCopied" class="hide">
+        Copied
+    </h5>
 	<!-- Wrapper -->
 	<div id="wrapper">
 
@@ -527,7 +555,10 @@
 							<input type="text" name="newfloid" id="newfloid" value="" disabled />
 							<br>
 							<label for="newprivatekey">Private Key</label>
-							<input type="text" name="newprivatekey" id="newprivatekey" value="" disabled />
+							<div class="flex align-center">
+								<input class="copy" type="text" name="newprivatekey" id="newprivatekey" value="" disabled />
+								<button class="justify-right" onclick="copyToClipboard(this.parentNode)">copy</button>
+							</div>
 					</section>
 					<section>
 						<p></p>
@@ -9757,6 +9788,15 @@
 			}
 		}
 
+		function copyToClipboard(parent) {
+            let toast = document.getElementById('textCopied'),
+                textToCopy = parent.querySelector('.copy').value;
+            navigator.clipboard.writeText(textToCopy)
+            toast.classList.remove('hide');
+            setTimeout(() => {
+                toast.classList.add('hide');
+            }, 2000)
+        }
 
 
 		async function fetchInternApplicants() {
