@@ -10102,6 +10102,8 @@
 								var temp = JSON.parse(applicants_InformationArray[i]['message'])
 								myFloID_Projects.push(temp[myFloID]['project'])
 
+								debugger
+
 								// force user to not change his details if he already exists
 								if (tcounter == 0) {
 									document.getElementById('name').value = temp[myFloID]['name']
@@ -10116,10 +10118,10 @@
 									document.getElementById('dob').readOnly = true
 									document.getElementById('whatsapp').value = 'encrypted'
 									document.getElementById('whatsapp').readOnly = true
-									document.getElementById('applyactionlist_apply').style.display = 'none'
-									document.getElementById('directapply_resetform').style.display = 'none'
-									document.getElementById('applyactionlist_apply').disabled = 'true'
-									document.getElementById('directapply_resetform').disabled = 'true'
+									//document.getElementById('applyactionlist_apply').style.display = 'none'
+									//document.getElementById('directapply_resetform').style.display = 'none'
+									//document.getElementById('applyactionlist_apply').disabled = 'true'
+									//document.getElementById('directapply_resetform').disabled = 'true'
 									tcounter = tcounter + 1
 								}
 							}
@@ -10164,6 +10166,8 @@
 						formprojectlistContainer.innerHTML = formprojectlistContainer.innerHTML +
 							applicationformHtml
 					}
+
+					debugger
 
 					document.getElementById('projectactionlist').style.display = 'flex'
 
